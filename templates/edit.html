@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}    
+    <div>
+        <form method="POST" action="/update">
+            <input type="text" id="name" name="name" value="{{ user[0] }}"><br>
+            <input type="text" id="email" name="email" value="{{ user[1] }}"><br>
+            <input type="submit" value="Update">
+        </form>
+    </div>
+    <table>
+        <tr>
+            <th>User_id</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Upload file</th>
+            <th>Delete user</th>
+        </tr>
+        <tr>
+            <td>{{ id }}</td>
+            <td>{{ user[0] }}</td>
+            <td>{{ user[1] }}</td>
+            <td><p>Upload File: <input type = "file" name = "filename" /></p>
+                <p><input type = "submit" value = "Upload" /></p>
+            </td>
+            <td>
+                <a href="/delete-user/{{id}}/" class = "sli glyphicon glyphicon-trash" style="font-size:20px;"> </a>
+            </td>
+            </tr>
+    </table>    
+{% endblock %}
