@@ -18,8 +18,14 @@
             {% endfor %}
         {% endif %}
         <form method="POST" action="/insert/">
-            <input type="text" id="name" name="name" placeholder="name"><br>
+            <input type="text" id="username" name="username" placeholder="username"><br>
+            <input type="text" id="first_name" name="first_name" placeholder="first name"><br>
+            <input type="text" id="last_name" name="last_name" placeholder="last name"><br>
             <input type="text" id="email" name="email" placeholder="email" ><br>
+            <input type="text" id="password" name="password" placeholder="password" ><br>
+            <input type="text" id="gender" name="gender" placeholder="sex (M or F)" ><br>
+            <input type="text" id="birth_date" name="birth_date" placeholder="birth date (example: 07-25-2012)" ><br>
+            <input type="text" id="phone" name="phone" placeholder="phone number" ><br>
             <input type="submit" value="Submit">
         </form>
     </div>    

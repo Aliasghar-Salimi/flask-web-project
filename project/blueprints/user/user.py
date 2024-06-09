@@ -6,7 +6,8 @@ import os
 from pathlib import Path
 
 import re
-from validatoins import validate_email, validate_name
+from validatoins import *
+
 user_blueprint = Blueprint('user_blueprint', __name__,
                             template_folder='templates')
 
@@ -19,35 +20,53 @@ def insert_user():
     cursor = cnx.cursor(buffered=True)
     
     # Retrieve name and email value from request
-    name = request.form["name"]
+    username = request.form["username"]
+    first_name = request.form["first_name"]
+    last_name = request.form["last_name"]
+    password = request.form["password"]
+    birth_date = request.form["birth_date"]
+    phone = request.form["phone"]
+    gender = request.form["gender"]
     email = request.form["email"]
 
+
     # Retrieve users to display in home page after rendring
-    select_all = "SELECT user_id, name, email FROM user;"
+    select_all = "SELECT user_id, first_name, last_name, email FROM users;"
     cursor.execute(select_all)
     users = cursor.fetchall()
 
-    errors = validate_name(name) + validate_email(email, users)
+    errors = (validate_username(username) + validate_first_name(first_name) 
+              + validate_last_name(last_name)+ validate_email(email, users)
+              + validate_gender(gender) + validate_birthdate(birth_date) 
+              + validate_password(password))
 
-    cursor.close()
-    cnx.close()
     if errors:
-        session['name'] = name
+        session['username'] = username
+        session['password'] = password
+        session['gender'] = gender
+        session['first_name'] = first_name
+        session['last_name'] = last_name
+        session['birth_date'] = birth_date
+        session['phone'] = phone
         session['email'] = email
         session['errors'] = errors
-        return redirect(url_for('login_errors', name=session['name'], email=session['email']))
+        return redirect(url_for('login_errors', first_name=session['first_name'], 
+                                last_name=session['last_name'], username=session['username'], 
+                                password=session['password'], gender=session['gender'], 
+                                email=session['email'], birth_date=session['birth_date'], 
+                                phone=session['phone'], errors=session['errors']))
+    
     if errors == []:
-        # Connect again to database
-        cnx = connection.connect()
-        cursor = cnx.cursor(buffered=True)
+        # insertion operation
+        insertion = f"""INSERT INTO users (first_name, last_name, username, email, phone, gender,
+                     birth_date, password) VALUES ('{first_name}', '{last_name}', '{username}', '{email}',
+                     {phone}, '{gender}', STR_TO_DATE('{birth_date}','%m-%d-%Y'), '{password}')"""
 
-        # Insertion operation
-        insertion = "INSERT INTO user (name, email) VALUES (%s, %s)"
-        data = (name, email)  
-        cursor.execute(insertion, data)
+        cursor.execute(insertion)
         cnx.commit()     
-        flash(f'user {name} created successfuly')
+        flash(f'user {username} created successfuly')
         return redirect(url_for('user_list'))
+
 
 
 @user_blueprint.route("/delete-user/<id>/")
@@ -59,7 +78,7 @@ def delete_view(id):
     user_id = id
 
     # get user current informatino
-    select_one = "SELECT name, email FROM user WHERE user_id={};".format(user_id)
+    select_one = "SELECT username, email FROM users WHERE user_id={};".format(user_id)
     cursor.execute(select_one)
     user = cursor.fetchone()
 
@@ -84,17 +103,17 @@ def delete_user(id):
         return redirect(url_for('home'))
     
     # get user's name
-    select_one = "SELECT name FROM user WHERE user_id={};".format(user_id)
+    select_one = "SELECT username FROM users WHERE user_id={};".format(user_id)
     cursor.execute(select_one)
     user = cursor.fetchone()
 
     name = user[0]
 
-    delete_files = 'DELETE FROM file WHERE user_id=%s;'
-    cursor.execute(delete_files, (user_id,))
-    cnx.commit()
+    # delete_files = 'DELETE FROM files WHERE user_id=%s;'
+    # cursor.execute(delete_files, (user_id,))
+    # cnx.commit()
 
-    delete_query = "DELETE FROM user WHERE user_id=%s;"
+    delete_query = "DELETE FROM users WHERE user_id=%s;"
     cursor.execute(delete_query, (user_id,))
     cnx.commit()
     
@@ -120,14 +139,14 @@ def update_user():
 
     # Get user information form request
     user_id = request.form.get('user_id')
-    name =  request.form.get('name')
+    first_name =  request.form.get('name')
     email = request.form.get('email')
 
     # Update operation
-    update_query = """UPDATE user
-                    SET name=%s, email=%s
+    update_query = """UPDATE users
+                    SET first_name=%s, email=%s
                     WHERE user_id=%s;"""
-    user_data = (name, email, user_id)
+    user_data = (first_name, email, user_id)
 
     cursor.execute(update_query, user_data)
     cnx.commit()
@@ -153,7 +172,7 @@ def user_update(id):
     user_id = id
     
     # get user current informatino
-    select_one = "SELECT name, email FROM user WHERE user_id={};".format(user_id)
+    select_one = "SELECT name, email FROM users WHERE user_id={};".format(user_id)
     cursor.execute(select_one)
     user = cursor.fetchone()
 

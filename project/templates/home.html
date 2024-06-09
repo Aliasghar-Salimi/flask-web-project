@@ -8,7 +8,7 @@
         <style>
             @import url('https://fonts.googleapis.com/css?family=Raleway:400,700');  
 
-.social-login {   
+/* .social-login {   
     position: absolute;  
     height: 240px;  
     width: 160px;  
@@ -30,7 +30,7 @@
 }  
 .sli:hover {  
     transform: scale(1.5);    
-}  
+}   */
 
         </style>
         </head>
@@ -39,6 +39,7 @@
                 <th>image</th>
                 <th>User_id</th>
                 <th>Name</th>
+                <th>Userame</th>
                 <th>Email</th>
                 <th>Upload file</th>
                 <th>Uploaded files</th>
@@ -57,8 +58,9 @@
                 {% endif %}
                 </td>
                 <td>{{ user[0] }}</td>
-                <td>{{ user[1] }}</td>
-                <td>{{ user[2] }}</td>
+                <td>{{ user[1] }} {{ user[2] }}</td>
+                <td>{{ user[3] }}</td>
+                <td>{{ user[4] }}</td>
                 <td>
                     <form action = "/upload/" method = "post" enctype="multipart/form-data">  
                         <input type="file" name="file" />  

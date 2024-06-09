@@ -37,7 +37,7 @@ def upload():
             file.save(os.path.join(UPLOAD_FOLDER, file.filename))
 
             # Insert filename and user_id into the file table
-            query = "INSERT INTO file (filename, user_id) VALUES (%s, %s)"
+            query = "INSERT INTO files (filename, user_id) VALUES (%s, %s)"
             cursor.execute(query, (filename, user_id))
             cnx.commit()
 

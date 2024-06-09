@@ -30,20 +30,12 @@ UPLOAD_FOLDER = Path.joinpath(cwd, 'media/images')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 
-
-# Database configiration
-db_name = "employees"
-db_user = "root"
-db_password = "ali@1234"
-db_host = "127.0.0.1"
-
-
 @app.route("/home/", methods=["GET"])
 def user_list():
     cnx = connection.connect()
     cursor = cnx.cursor()
 
-    select_query = "SELECT user_id, name, email FROM user;"
+    select_query = "SELECT user_id, first_name, last_name, username, email, phone, gender, birth_date FROM users;"
     cursor.execute(select_query)
     users = cursor.fetchall()
     
@@ -54,7 +46,7 @@ def user_list():
         user_id = user[0]
 
         # Fetch user's filenames to show in home page
-        select_file_query = "SELECT filename FROM file WHERE user_id=%s;"
+        select_file_query = "SELECT filename FROM files WHERE user_id=%s;"
         cursor.execute(select_file_query, (user_id,))
         files = cursor.fetchall()
         user_files[user_id] = [file[0] for file in files]
@@ -68,8 +60,8 @@ def user_list():
     cnx.close()
     
     return render_template('home.html', users=users, user_files=user_files,
-                            user_file_urls=user_file_urls)
-
+                            )
+""" user_file_urls=user_file_urls """
 
 
 
@@ -87,13 +79,19 @@ def login_errors():
     cursor = cnx.cursor(buffered=True)
 
     # Retrieve users, name, and email value from passed data
-    name = session['name']
+    username = session['username']
+    password = session['password']
+    phone = session['phone']
+    first_name = session['first_name']
+    last_name = session['last_name']
+    gender = session['gender']
+    birth_date = session['birth_date']
     email = session['email']
     errors = session['errors']
 
-    return render_template('login.html', errors=errors, name=name, email=email)
-
-
+    return render_template('login.html', errors=errors, first_name=first_name, last_name=last_name, email=email,
+                           username=username, password=password, gender=gender, birth_date=birth_date,                           
+                           phone=phone)
 
 
 if __name__ == "__main__":
