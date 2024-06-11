@@ -8,6 +8,7 @@ from pathlib import Path
 import re
 from validatoins import *
 
+
 user_blueprint = Blueprint('user_blueprint', __name__,
                             template_folder='templates')
 
@@ -38,7 +39,7 @@ def insert_user():
     errors = (validate_username(username) + validate_first_name(first_name) 
               + validate_last_name(last_name)+ validate_email(email, users)
               + validate_gender(gender) + validate_birthdate(birth_date) 
-              + validate_password(password))
+              + validate_password(password)) + validate_phone(phone)
 
     if errors:
         session['username'] = username
@@ -57,6 +58,9 @@ def insert_user():
                                 phone=session['phone'], errors=session['errors']))
     
     if errors == []:
+        # hash password 
+        from main import the_bcrypt
+        password = the_bcrypt.generate_password_hash('password').decode('utf-8')
         # insertion operation
         insertion = f"""INSERT INTO users (first_name, last_name, username, email, phone, gender,
                      birth_date, password) VALUES ('{first_name}', '{last_name}', '{username}', '{email}',

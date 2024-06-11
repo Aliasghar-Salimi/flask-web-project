@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, session, redirect, url_for
 import mysql.connector
 from mysql.connector import errorcode
 
+
 from blueprints.user.user import user_blueprint
 from blueprints.file.upload import upload_blueprint
 
@@ -15,10 +16,13 @@ from werkzeug.utils import secure_filename
 import os
 from pathlib import Path
 
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
+the_bcrypt = Bcrypt(app)
 app.register_blueprint(user_blueprint)
 app.register_blueprint(upload_blueprint)
+
 
 # Secret key configuration
 app.secret_key = "~\x7fS~\xa1\x08\xcd79Jgj"
@@ -51,10 +55,24 @@ def user_list():
         files = cursor.fetchall()
         user_files[user_id] = [file[0] for file in files]
 
+        file_names = []
+        for files in user_files[user_id]:
+            pattern1 = "b'"
+            pattern2 = "\\..*"
+            text = str(files)
+            import re
+            text = re.sub(pattern1, "", text)
+            text = re.sub(pattern2, "", text)
+            file_names.append(text)
+        print(file_names)
+
+        user_files[user_id] = [file for file in file_names]
+
+
         user_file_urls = {}
         # Generate URLs for the images
-        user_file_urls[user_id] = [url_for('static', filename=os.path.join(UPLOAD_FOLDER, file)) for file in user_files[user_id]]
-        print(user_file_urls[user_id])
+        # user_file_urls[user_id] = [url_for('static', os.path.join(UPLOAD_FOLDER, file)) for file in user_files[user_id]]
+        # print(user_file_urls[user_id])
 
     cursor.close()
     cnx.close()

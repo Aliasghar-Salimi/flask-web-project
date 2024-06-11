@@ -35,8 +35,9 @@ def upload():
         if file and allowed_file(file.filename):
             filename = secure_filename(file.filename)
             file.save(os.path.join(UPLOAD_FOLDER, file.filename))
+            print(file.filename)
 
-            # Insert filename and user_id into the file table
+            # Insert filename and user_id into the files table
             query = "INSERT INTO files (filename, user_id) VALUES (%s, %s)"
             cursor.execute(query, (filename, user_id))
             cnx.commit()

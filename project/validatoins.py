@@ -84,7 +84,7 @@ def validate_phone(phone):
     errors = []
     phone_regex = r"^(\d{4}[\-,\.]\d{3}[\-,\.]\d{4}|\d{11})$"
     if not re.match(phone_regex, phone):
-        errors.append("the date format is not valid")
+        errors.append("the phone format is not valid")
     return errors
 
 
