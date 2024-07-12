@@ -1,76 +1,116 @@
 from flask import (Flask, request, render_template, Blueprint, redirect, flash
-                    , url_for, session)
+                    , url_for, session, jsonify)
 import connection
 
-import os
-from pathlib import Path
+import hashlib
 
-import re
 from validatoins import *
 
+import json
+
+from werkzeug.security import generate_password_hash, check_password_hash # http://flask.pocoo.org/snippets/54/
+from datetime import datetime
 
 user_blueprint = Blueprint('user_blueprint', __name__,
                             template_folder='templates')
 
 
 
-@user_blueprint.route("/insert/", methods=["POST"])
-def insert_user():
+@user_blueprint.route("/register/", methods=["GET","POST"])
+def register():
     # Connect to database
     cnx = connection.connect()
     cursor = cnx.cursor(buffered=True)
     
-    # Retrieve name and email value from request
-    username = request.form["username"]
-    first_name = request.form["first_name"]
-    last_name = request.form["last_name"]
-    password = request.form["password"]
-    birth_date = request.form["birth_date"]
-    phone = request.form["phone"]
-    gender = request.form["gender"]
-    email = request.form["email"]
+    if request.method == "POST":
+        # Retrieve name and email value from request
+        username = request.form.get("username")
+        first_name = request.form.get("first_name")
+        last_name = request.form.get("last_name")
+        password = request.form.get("password")
+        birth_date = request.form.get("birth_date")
+        phone = request.form.get("phone")
+        gender = request.form.get("gender")
+        email = request.form.get("email")
+        password = request.form.get("password")
 
+        # Retrieve users to display in home page after rendring
+        select_all = "SELECT id, first_name, last_name, email FROM users;"
+        cursor.execute(select_all)
+        users = cursor.fetchall()
 
-    # Retrieve users to display in home page after rendring
-    select_all = "SELECT user_id, first_name, last_name, email FROM users;"
-    cursor.execute(select_all)
-    users = cursor.fetchall()
-
-    errors = (validate_username(username) + validate_first_name(first_name) 
-              + validate_last_name(last_name)+ validate_email(email, users)
-              + validate_gender(gender) + validate_birthdate(birth_date) 
-              + validate_password(password)) + validate_phone(phone)
-
-    if errors:
-        session['username'] = username
-        session['password'] = password
-        session['gender'] = gender
-        session['first_name'] = first_name
-        session['last_name'] = last_name
-        session['birth_date'] = birth_date
-        session['phone'] = phone
-        session['email'] = email
-        session['errors'] = errors
-        return redirect(url_for('login_errors', first_name=session['first_name'], 
-                                last_name=session['last_name'], username=session['username'], 
-                                password=session['password'], gender=session['gender'], 
-                                email=session['email'], birth_date=session['birth_date'], 
-                                phone=session['phone'], errors=session['errors']))
+        # Validating files
+        errors = (validate_username(username) + validate_first_name(first_name) 
+                  + validate_last_name(last_name)+ validate_email(email, users)
+                  + validate_gender(gender) + validate_birthdate(birth_date) 
+                  + validate_password(password) + validate_phone(phone))
     
-    if errors == []:
-        # hash password 
-        from main import the_bcrypt
-        password = the_bcrypt.generate_password_hash('password').decode('utf-8')
-        # insertion operation
-        insertion = f"""INSERT INTO users (first_name, last_name, username, email, phone, gender,
-                     birth_date, password) VALUES ('{first_name}', '{last_name}', '{username}', '{email}',
-                     {phone}, '{gender}', STR_TO_DATE('{birth_date}','%m-%d-%Y'), '{password}')"""
+        if errors:
+            return render_template('register.html', errors=errors, first_name=first_name, last_name=last_name, email=email,
+                           username=username, password=password, gender=gender, birth_date=birth_date,                           
+                           phone=phone)
+        if errors == []:
+            # hash password 
+            password = generate_password_hash(str(password))
 
-        cursor.execute(insertion)
-        cnx.commit()     
-        flash(f'user {username} created successfuly')
-        return redirect(url_for('user_list'))
+            # insertion operation
+            insertion = f"""INSERT INTO users (first_name, last_name, username, email, phone, gender,
+                         birth_date, password) VALUES ('{first_name}', '{last_name}', '{username}', '{email}',
+                         {phone}, '{gender}', STR_TO_DATE('{birth_date}','%m-%d-%Y'), '{password}')"""
 
+            cursor.execute(insertion)
+            cnx.commit()     
+            flash(f'user {username} created successfuly')
+            return redirect(url_for('home'))
+        
+    elif request.method == "GET":
+        return render_template('register.html')
+
+
+
+
+@user_blueprint.route('/login/', methods=["POST", "GET"])
+def user_login():
+    # Connect to database
+    cnx = connection.connect()
+    cursor = cnx.cursor(buffered=True)
+
+    errors = []
+    if request.method == "POST":
+        password = request.form.get('password')
+        username = request.form.get('username')
+        errors = (validate_username(username) + validate_password(password))
+
+        select_one = "SELECT password FROM users WHERE username='{}';".format(username)
+        cursor.execute(select_one)
+        current_password = cursor.fetchone()
+
+        cursor.close()
+        cnx.close()
+        
+        if errors:
+            return render_template("login.html", errors=errors)
+        else:
+            if cursor.rowcount > 0:
+                if check_password_hash(current_password[0], password):
+                    session.permanent = True
+                    session['username'] = request.form.get('username')
+                    return redirect('/')
+                else:
+                    flash('wrong username or password')
+                    return redirect('/login/')
+            else:
+                flash('the user does not exist')
+                return redirect('/login/')
+    else:
+        return render_template('login.html')
+     
+    
+
+@user_blueprint.route("/logout/")
+def logout():
+	session["username"] = None
+	return redirect("/")
 
 
 @user_blueprint.route("/delete-user/<id>/")
@@ -82,14 +122,14 @@ def delete_view(id):
     user_id = id
 
     # get user current informatino
-    select_one = "SELECT username, email FROM users WHERE user_id={};".format(user_id)
+    select_one = "SELECT username, email FROM users WHERE id={};".format(user_id)
     cursor.execute(select_one)
     user = cursor.fetchone()
 
     if cursor.rowcount > 0:
         return render_template('delete_user.html', id=user_id, user=user)
     else:
-        return redirect('/home')
+        return redirect('/')
 
 
 
@@ -107,18 +147,16 @@ def delete_user(id):
         return redirect(url_for('home'))
     
     # get user's name
-    select_one = "SELECT username FROM users WHERE user_id={};".format(user_id)
+    select_one = "SELECT username FROM users WHERE id={};".format(user_id)
     cursor.execute(select_one)
     user = cursor.fetchone()
 
     name = user[0]
 
-    # delete_files = 'DELETE FROM files WHERE user_id=%s;'
-    # cursor.execute(delete_files, (user_id,))
-    # cnx.commit()
+    now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
 
-    delete_query = "DELETE FROM users WHERE user_id=%s;"
-    cursor.execute(delete_query, (user_id,))
+    delete_query = "UPDATE users SET delete_date=%s WHERE id=%s;"
+    cursor.execute(delete_query, (now, user_id,))
     cnx.commit()
     
     cursor.close()
@@ -126,10 +164,10 @@ def delete_user(id):
 
     if cursor.rowcount > 0:
         flash(f'user {name} deleted successfuly')
-        return redirect('/home')
+        return redirect('/')
     else:
         flash(f'user {name} not found')
-        return redirect('/home')
+        return redirect('/')
 
 
 
@@ -143,14 +181,16 @@ def update_user():
 
     # Get user information form request
     user_id = request.form.get('user_id')
-    first_name =  request.form.get('name')
+    first_name =  request.form.get('first_name')
+    last_name =  request.form.get('last_name')
+    username = request.form.get("username")
     email = request.form.get('email')
 
     # Update operation
     update_query = """UPDATE users
-                    SET first_name=%s, email=%s
-                    WHERE user_id=%s;"""
-    user_data = (first_name, email, user_id)
+                    SET first_name=%s, last_name=%s, username=%s, email=%s
+                    WHERE id=%s;"""
+    user_data = (first_name, last_name, username, email, user_id)
 
     cursor.execute(update_query, user_data)
     cnx.commit()
@@ -159,9 +199,9 @@ def update_user():
     cnx.close()
 
     if cursor.rowcount > 0:
-        return redirect('/home')
+        return redirect('/')
     else:
-        return redirect('/home')
+        return redirect('/')
 
 
 
@@ -176,13 +216,85 @@ def user_update(id):
     user_id = id
     
     # get user current informatino
-    select_one = "SELECT name, email FROM users WHERE user_id={};".format(user_id)
+    select_one = "SELECT first_name, last_name, username, email FROM users WHERE id={};".format(user_id)
     cursor.execute(select_one)
     user = cursor.fetchone()
-
+    
     cursor.close()
     cnx.close()
     
     return render_template('edit.html', user=user, id=user_id)
+
+
+@user_blueprint.route("/update_password/<id>/", methods=["POST"])
+def update_password(id):
+    # Connect to database
+    cnx = connection.connect()
+    cursor = cnx.cursor()
+
+    # opdate operation
+    current_pass = request.form["current_password"]
+    c_pass = hashlib.md5(current_pass.encode('utf-8'))
+    print(c_pass)
+
+    new_pass = request.form["new_password"]
+    n_pass = hashlib.md5(new_pass.encode('utf-8'))
+
+    select_pass_query = f"SELECT password FROM users WHERE id={id}"
+    cursor.execute(select_pass_query)
+    old_user_pass = cursor.fetchone()
+    print(old_user_pass[0])
+
+    if old_user_pass[0] == c_pass:
+        update_pass_query = f"INSERT INTO users (password) VALUES ({n_pass})"
+        cursor.execute(update_pass_query)
+        cnx.commit()
+        
+        cursor.close()
+        cnx.close()
+        return json.dumps({'status': 'ok'})
+    else:
+        return json.dumps({'status': 'failed'})
+        
+
+@user_blueprint.route("/reset_password/", methods=["POST", "GET"])
+def reset_password():
+    cnx = connection.connect()
+    cursor = cnx.cursor()
+    if request.method == 'POST':
+        email = request.form.get("email")
+        old_password = request.form.get("old-password")
+        new_password = request.form.get("new-password")
+        confirm_password = request.form.get("confirm_password")
+
+        errors = []
+        errors = (validate_password(new_password))
+
+        check_users_query = f"SELECT password, email FROM users WHERE email='{email}'"
+        cursor.execute(check_users_query)
+        current_password = cursor.fetchone()
+
+        if errors:
+            return render_template("reset_password.html", errors=errors)
+        else:
+            if check_password_hash(current_password[0], old_password):
+                # return json.dumps({'password': f"{new_password}"f"{confirm_password}"})
+                if new_password == confirm_password:
+                    hashed_pass = generate_password_hash(str(new_password))
+                    insert_new_pass_query = f"update users set password='{hashed_pass}' where email='{email}';"
+                    cursor.execute(insert_new_pass_query)
+                    cnx.commit()    
+
+                    cursor.close()
+                    cnx.close()
+                    return redirect("/")
+                else:
+                    flash("Password does not match")
+                    return redirect("/reset_password/")
+            else:
+                flash("enter the right password")
+                return redirect("/reset_password/")
+    else:
+        return render_template("reset_password.html")
 
 
