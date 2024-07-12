@@ -43,7 +43,7 @@ def upload():
             cnx.commit()
 
             flash(f'file {file.filename} successfully uploaded') 
-            return redirect(url_for('user_list'))  
+            return redirect(url_for('home'))  
         else:
             flash('Allowed file types are txt, pdf, png, jpg, jpeg, gif')
             return redirect(request.url)

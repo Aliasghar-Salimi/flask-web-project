@@ -21,73 +21,80 @@
     display: flex;  
     align-items: center;  
     justify-content: center;  
-}  
+    }  
 .sli {  
     padding: 20px 10px;  
     color: #fff;  
     text-decoration: none;    
     text-shadow: 0px 0px 8px #7875B5;  
-}  
-.sli:hover {  
-    transform: scale(1.5);    
-}   */
+    }  
+    .sli:hover {  
+        transform: scale(1.5);    
+        }   */
 
         </style>
         </head>
-        <table>
-            <tr>
-                <th>image</th>
-                <th>User_id</th>
-                <th>Name</th>
-                <th>Userame</th>
-                <th>Email</th>
-                <th>Upload file</th>
-                <th>Uploaded files</th>
-                <th>Edit user</th>
-                <th>Delete user</th>
-            </tr>
-            {% for user in users %}
-            <tr>
-                <td>
-                    {% if user[0] in user_file_urls %}
-                    <ul>    
-                        {% for image_url in user_file_urls[user[0]] %}
-                            <li><img src="{{ image_url }}" alt="User Image"></li>
-                        {% endfor %}
-                    </ul>    
-                {% endif %}
-                </td>
-                <td>{{ user[0] }}</td>
-                <td>{{ user[1] }} {{ user[2] }}</td>
-                <td>{{ user[3] }}</td>
-                <td>{{ user[4] }}</td>
-                <td>
-                    <form action = "/upload/" method = "post" enctype="multipart/form-data">  
-                        <input type="file" name="file" />  
-                        <input type="hidden" name="user_id" value="{{ user[0] }}" />  <!-- Hidden input to pass user_id -->
-                        <input type = "submit" value="Upload">  
-                    </form> 
-                </td>
-                <td>
-                    {% if user[0] in user_files.keys() %}
-                        <ul>    
-                            {% for filename in user_files[user[0]] %}
-                                <il>{{ filename }}</il>
-                            {% endfor %}
-                        </ul> 
-                    {% else %}
-                        No files uploaded
-                    {% endif %}
-                </td>
-                <form method="POST" action="/fetch-update/{{ user[0] }}/">
-                    <td>
-                        <a href="/fetch-update/{{ user[0] }}/" class="glyphicon glyphicon-pencil" style="font-size:20px;"></a>
-                    </td>
-                </form>
-                <td>
-                    <a href="/delete-user/{{ user[0] }}/" class = "sli glyphicon glyphicon-trash" style="font-size:20px;"> </a>
-                </td>
-            </tr>   
-        {% endfor %}
-    </table>     
+        {% if session.username %}
+            <body>
+                <table>
+                    <tr>
+                        <th>image</th>
+                        <th>User_id</th>
+                        <th>Name</th>
+                        <th>Userame</th>
+                        <th>Email</th>
+                        <th>Upload file</th>
+                        <th>Uploaded files</th>
+                        <th>Edit user</th>
+                        <th>Delete user</th>
+                    </tr>   
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            {% if user[0] in user_file_urls %}
+                            <ul>    
+                                {% for image_url in user_file_urls[user[0]] %}
+                                    <li><img src="{{ image_url }}"></li>
+                                     <!-- {{ image_url }} -->
+                                {% endfor %}
+                            </ul>    
+                        {% endif %}
+                        </td>
+                        <td>{{ user[0] }}</td>
+                        <td>{{ user[1] }} {{ user[2] }}</td>
+                        <td>{{ user[3] }}</td>
+                        <td>{{ user[4] }}</td>
+                        <td>
+                            <form action = "/upload/" method = "post" enctype="multipart/form-data">  
+                                <input type="file" name="file" />  
+                                <input type="hidden" name="user_id" value="{{ user[0] }}" />  <!-- Hidden input to pass user_id -->
+                                <input type = "submit" value="Upload">  
+                            </form> 
+                        </td>
+                        <td>
+                            {% if user[0] in user_files.keys() %}
+                            <ul>    
+                                {% for filename in user_files[user[0]] %}
+                                        <il>{{ filename }}</il><br>
+                                    {% endfor %}
+                                </ul> 
+                            {% else %}
+                                No files uploaded
+                            {% endif %}
+                        </td>
+                        <form method="POST" action="/fetch-update/{{ user[0] }}/">
+                            <td>
+                                <a href="/fetch-update/{{ user[0] }}/" class="glyphicon glyphicon-pencil" style="font-size:20px;"></a>
+                            </td>
+                        </form>
+                        <td>
+                            <a href="/delete-user/{{ user[0] }}/" class = "sli glyphicon glyphicon-trash" style="font-size:20px;"> </a>
+                        </td>
+                        </tr>   
+                    {% endfor %}
+                </table> 
+            </body>    
+        {% else %}
+            You are not Register. <a href="/login">login</a>.
+        {% endif %}
 {% endblock %}
