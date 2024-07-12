@@ -1,3 +1,7 @@
 *.pyc
 media/images/*
 __pycache__
+notes.txt
+.*-312.pyc
+flask_session
+.gitignore
