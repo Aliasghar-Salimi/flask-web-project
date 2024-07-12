@@ -14,7 +14,7 @@ def connect():
     tables = {}
     tables['users'] = (
                     """CREATE TABLE IF NOT EXISTS users (
-                        user_id INT AUTO_INCREMENT PRIMARY KEY,
+                        id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(50) NOT NULL UNIQUE,
                         first_name VARCHAR(100) NOT NULL,
                         last_name VARCHAR(100) NOT NULL,
@@ -22,16 +22,18 @@ def connect():
                         gender ENUM('M', 'F') NOT NULL,
                         birth_date DATE NOT NULL,
                         email VARCHAR(255) NOT NULL UNIQUE,
+                        delete_date DATE DEFAULT NULL,
                         password VARCHAR(255) NOT NULL,
                         CHECK (CHAR_LENGTH(username) >= 5)
                         ) ENGINE=InnoDB""")
     
     tables['files'] = (
                     """CREATE TABLE IF NOT EXISTS files (
-                        file_id INT AUTO_INCREMENT PRIMARY KEY,
+                        id INT AUTO_INCREMENT PRIMARY KEY,
                         user_id INT NOT NULL,
                         filename BLOB NOT NULL,
-                        FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+                        delete_date DATE DEFAULT NULL,
+                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                         ) ENGINE=InnoDB""")
 
     for table_name in tables:
