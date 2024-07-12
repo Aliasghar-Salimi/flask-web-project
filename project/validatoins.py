@@ -13,6 +13,7 @@ def validate_username(username):
     return errors
     
 
+
 def validate_first_name(name):
     errors = []
     if not name:
@@ -73,11 +74,15 @@ def  validate_gender(gender):
 
 def validate_password(password):
     errors = list()
-    password_regex = r"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$" # Minimum eight characters, at least one uppercase letter, one lowercase letter and one number
-    if not re.match(password_regex, password):
-        errors.append("""Please enter a stronger password, it should be minimum 
-                      eight characters, at least one uppercase letter, one lowercase
-                      letter and one number""")
+    password_regex = r"[A-Za-z0-9@#$%^&+=]{8,}" # Minimum eight characters, at least one uppercase letter, one lowercase letter and one number
+    
+    if password:
+        if not re.match(password_regex, password):
+            errors.append("""Please enter a stronger password, it should be minimum 
+                          eight characters, at least one uppercase letter, one lowercase
+                          letter and one number""")
+    else:
+        errors.append("enter the password please")
     return errors
 
 def validate_phone(phone):
