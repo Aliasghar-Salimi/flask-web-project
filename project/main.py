@@ -1,4 +1,4 @@
-from flask import Flask, request, render_template, session, redirect, url_for, jsonify
+from flask import Flask, request, render_template, session, redirect, url_for, jsonify, flash
 from flask_session import Session
 
 import mysql.connector
@@ -22,6 +22,7 @@ from flask_bcrypt import Bcrypt
 
 from datetime import timedelta
 
+from utils import binary_remove, name_creater, generate_code
 
 app = Flask(__name__)
 the_bcrypt = Bcrypt(app)
@@ -39,6 +40,7 @@ app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 mail = Mail(app)
 
+
 # Session setings
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -53,44 +55,32 @@ app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5)
 UPLOAD_FOLDER = ('media/images')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-def name_creater(user_files, user_id):
-    file_names = []
-    for files in user_files[user_id]:
-        pattern1 = "b'"
-        pattern2 = "\\..*"
-        text = str(files)
-        import re
-        text = re.sub(pattern1, "", text)
-        text = re.sub(pattern2, "", text)
-        file_names.append(text)
-    return file_names
-
-def binary_remove(user_files, user_id):
-    file_names = []
-    for files in user_files[user_id]:
-        pattern1 = "b'"
-        text = str(files)
-        import re
-        text = re.sub(pattern1, "", text)
-        text = text.replace("'", "")
-        file_names.append(text)
-    return file_names
 
 # send email section
 import json
 thesender= "ali.kurd13830000@gmail.com" 
-@app.route('/send-email/', methods=['POST'])
+@app.route('/send-email/', methods=['POST', 'GET'])
 def send_email():
-    therecipients = ["aliasghar.salimi.05@gmail.com"]
-    msg = Message("Hi there",
+    # connect to the databes
+    cnx = connection.connect()
+    cursor = cnx.cursor()
+
+    # generate temporary code and send email
+    code = generate_code()
+    user_id = session.get('id')
+    save_code_query = f"INSERT INTO temp_codes (user_id, code) VALUES ({user_id}, {code})"
+    cursor.execute(save_code_query)
+    cnx.commit()
+    
+    recipients = ["aliasghar.salimi.05@gmail.com"]
+    msg = Message("Reset password temporary code",
                   sender=thesender,
-                  recipients=therecipients)
-    msg.body = "this is a test email"
-
+                  recipients=recipients)
+    msg.body = f"""This is your code {code} enter it and continue the process of reseting password.
+    at your service"""
     mail.send(msg)
-
-    return json.dumps({'email': 'sent'})
-
+    flash("verifivation code emailed, please check your inbox and enter the code below")
+    return render_template("email_verification.html")
 
 @app.route("/", methods=["GET"])
 def home():

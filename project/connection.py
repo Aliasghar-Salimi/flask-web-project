@@ -35,6 +35,12 @@ def connect():
                         delete_date DATE DEFAULT NULL,
                         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                         ) ENGINE=InnoDB""")
+    tables['temp_codes'] = (
+                        """CREATE TABLE IF NOT EXISTS temp_codes (
+                        user_id INT NOT NULL,
+                        code INT NOT NULL,
+                        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+                        ) ENGINE=InnoDB""")
 
     for table_name in tables:
         cursor.execute(tables[table_name])
