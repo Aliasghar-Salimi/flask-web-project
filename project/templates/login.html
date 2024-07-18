@@ -19,8 +19,8 @@
             {% endfor %}
         {% endif %}
         <form method="POST" action="/login/">
-            <input type="text" id="username" name="username" placeholder="username"><br>
-            <input type="text" id="password" name="password" placeholder="password" ><br>
+            <input required type="text" id="username" name="username" placeholder="username"><br>
+            <input required type="text" id="password" name="password" placeholder="password" ><br>
             <input type="submit" value="Login">
         </form>
         you forgot your password? <a href="/reset_password/">Reset password</a>

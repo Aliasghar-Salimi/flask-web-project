@@ -17,10 +17,10 @@ def connect():
                         id INT AUTO_INCREMENT PRIMARY KEY,
                         username VARCHAR(50) NOT NULL UNIQUE,
                         first_name VARCHAR(100) NOT NULL,
-                        last_name VARCHAR(100) NOT NULL,
+                        last_name VARCHAR(100),
                         phone VARCHAR(15),
-                        gender ENUM('M', 'F') NOT NULL,
-                        birth_date DATE NOT NULL,
+                        gender ENUM('M', 'F'),
+                        birth_date DATE,
                         email VARCHAR(255) NOT NULL UNIQUE,
                         delete_date DATE DEFAULT NULL,
                         password VARCHAR(255) NOT NULL,
@@ -41,6 +41,4 @@ def connect():
         connection.commit()
 
     cursor.close()
-    
-
     return connection

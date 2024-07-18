@@ -3,10 +3,19 @@
     <div>
         <form method="POST" action="/update">
             <input type="hidden" id="user_id" name="user_id" value="{{ id }}"><br>
+            
+            <label for="first_name">first name</label>
             <input type="text" id="first_name" name="first_name" value="{{ user[0] }}"><br>
+            
+            <label for="last_name">last name</label>
             <input type="text" id="last_name" name="last_name" value="{{ user[1] }}"><br>
+            
+            <label for="username">username</label>
             <input type="text" id="username" name="username" value="{{ user[2] }}"><br>
+            
+            <label for="email">email</label>
             <input type="text" id="email" name="email" value="{{ user[3] }}"><br>
+            
             <input type="submit" value="Update">
         </form>
     </div>
@@ -26,7 +35,7 @@
                 <p><input type = "submit" value = "Upload" /></p>
             </td>
             <td>
-                <a href="/delete-user/{{id}}/" class = "sli glyphicon glyphicon-trash" style="font-size:20px;"> </a>
+                <a href="/delete/{{id}}/" class = "sli glyphicon glyphicon-trash" style="font-size:20px;"> </a>
             </td>
         </tr>
     </table>    

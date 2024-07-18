@@ -101,6 +101,9 @@ def home():
     cursor.execute(select_query)
     users = cursor.fetchall()
 
+    if cursor.rowcount == 0:
+        return redirect('/register/')
+
     # Retrieve files for each user
     user_files = {}
     user_file_types_urls = {}
@@ -112,9 +115,6 @@ def home():
             cursor.execute(select_file_query)
             files = cursor.fetchall()
 
-            for file in files:
-                print(file)
-            
             user_files[user_id] = [file[0] for file in files]
 
             name_but_binary = binary_remove(user_files, user_id)

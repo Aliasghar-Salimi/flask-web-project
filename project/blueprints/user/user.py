@@ -33,7 +33,7 @@ def register():
         gender = request.form.get("gender")
         email = request.form.get("email")
         password = request.form.get("password")
-
+        print(gender)
         # Retrieve users to display in home page after rendring
         select_all = "SELECT id, first_name, last_name, email FROM users;"
         cursor.execute(select_all)
@@ -42,8 +42,7 @@ def register():
         # Validating files
         errors = (validate_username(username) + validate_first_name(first_name) 
                   + validate_last_name(last_name)+ validate_email(email, users)
-                  + validate_gender(gender) + validate_birthdate(birth_date) 
-                  + validate_password(password) + validate_phone(phone))
+                  + validate_gender(gender)+ validate_phone(phone))
     
         if errors:
             return render_template('register.html', errors=errors, first_name=first_name, last_name=last_name, email=email,
@@ -56,10 +55,12 @@ def register():
             # insertion operation
             insertion = f"""INSERT INTO users (first_name, last_name, username, email, phone, gender,
                          birth_date, password) VALUES ('{first_name}', '{last_name}', '{username}', '{email}',
-                         {phone}, '{gender}', STR_TO_DATE('{birth_date}','%m-%d-%Y'), '{password}')"""
+                         {phone}, '{gender}', '{birth_date}', '{password}')"""
 
             cursor.execute(insertion)
             cnx.commit()     
+            session.permanent = True
+            session['username'] = request.form.get('username')
             flash(f'user {username} created successfuly')
             return redirect(url_for('home'))
         
@@ -113,28 +114,8 @@ def logout():
 	return redirect("/")
 
 
-@user_blueprint.route("/delete-user/<id>/")
-def delete_view(id):
-    # Conntect to database
-    cnx = connection.connect()
-    cursor = cnx.cursor()
 
-    user_id = id
-
-    # get user current informatino
-    select_one = "SELECT username, email FROM users WHERE id={};".format(user_id)
-    cursor.execute(select_one)
-    user = cursor.fetchone()
-
-    if cursor.rowcount > 0:
-        return render_template('delete_user.html', id=user_id, user=user)
-    else:
-        return redirect('/')
-
-
-
-
-@user_blueprint.route("/delete/<id>/", methods=["POST"])
+@user_blueprint.route("/delete/<id>/", methods=["POST", "GET"])
 def delete_user(id):
     # Conntect to database
     cnx = connection.connect()
