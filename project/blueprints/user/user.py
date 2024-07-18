@@ -257,8 +257,8 @@ def update_password(id):
         return json.dumps({'status': 'failed'})
         
 
-@user_blueprint.route("/reset_password/", methods=["POST", "GET"])
-def reset_password():
+@user_blueprint.route("/check-password/", methods=["POST", "GET"])
+def check_password():
     cnx = connection.connect()
     cursor = cnx.cursor()
     if request.method == 'POST':
@@ -270,31 +270,72 @@ def reset_password():
         errors = []
         errors = (validate_password(new_password))
 
-        check_users_query = f"SELECT password, email FROM users WHERE email='{email}'"
+        check_users_query = f"SELECT password, email, id FROM users WHERE email='{email}'"
         cursor.execute(check_users_query)
-        current_password = cursor.fetchone()
+        user = cursor.fetchone()
+        
+        id = user[2]
+        session['id'] = id
 
+        current_password = user[0]
         if errors:
-            return render_template("reset_password.html", errors=errors)
+            return render_template("check_password.html", errors=errors)
         else:
-            if check_password_hash(current_password[0], old_password):
+            if check_password_hash(current_password, old_password):
                 # return json.dumps({'password': f"{new_password}"f"{confirm_password}"})
                 if new_password == confirm_password:
                     hashed_pass = generate_password_hash(str(new_password))
-                    insert_new_pass_query = f"update users set password='{hashed_pass}' where email='{email}';"
-                    cursor.execute(insert_new_pass_query)
-                    cnx.commit()    
 
-                    cursor.close()
-                    cnx.close()
-                    return redirect("/")
+                    session['hashed_pass'] = hashed_pass
+                    return redirect("/send-email/")
                 else:
                     flash("Password does not match")
-                    return redirect("/reset_password/")
+                    return redirect("/check_password/")
             else:
                 flash("enter the right password")
-                return redirect("/reset_password/")
+                return redirect("/check_password/")
     else:
         return render_template("reset_password.html")
 
+@user_blueprint.route('/reset-password/', methods = ['POST', 'GET'])
+def reset_password():
+    # connect to the databes
+    cnx = connection.connect()
+    cursor = cnx.cursor()
 
+    user_id = session.get('id')
+    temp_code_query = f"SELECT code FROM temp_codes WHERE user_id='{user_id}'"
+    cursor.execute(temp_code_query)
+    temp_codes = cursor.fetchall()
+    print(temp_codes)
+    if cursor.rowcount != 0:
+        temp_code = temp_codes[len(temp_codes)-1:]
+        temp_code = temp_code[0][0]
+    else:
+        return json.dumps({'code': 'doesn\'t exist'})
+
+    print(temp_code)
+    
+    code = request.form.get("code")
+    print(code)
+    if request.method == 'POST':
+        if str(temp_code) == str(code):
+            hashed_pass = session.get('hashed_pass')
+            update_pass_query = f"update users set password='{hashed_pass}' where id='{user_id}';"
+            cursor.execute(update_pass_query)
+            cnx.commit()  
+
+            delete_code_query = f"DELETE FROM temp_codes WHERE user_id={user_id}"
+            cursor.execute(delete_code_query)
+            cnx.commit()
+
+            cursor.close()
+            cnx.close()
+
+            flash("password chaged")
+            return redirect('/login/')
+        else:
+            flash("the code is incorrect")
+            return render_template("email_verification.html")
+    else:
+        return render_template('email_verification.html')
