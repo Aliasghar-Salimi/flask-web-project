@@ -6,43 +6,36 @@
     <div>
         {% if errors %}
             {% for error in errors %}
-                <h3 style="
-                color: rgb(228, 228, 228);
-                background: #d03c3c !important;
-                padding: 10px !important;
-                border-radius: 0 !important;
-                position: relative; 
-                display: inline-block !important;
-                box-shadow: 2px 2px 2px #919191;
-                margin-top: 10px;">{{ error }}</h3>
+                <h3 class="error">{{ error }}</h3>
             {% endfor %}
         {% endif %}
         <form method="post" action="/register/">
-                <label for="password">*</label>
-                <input required type="text" id="username" name="username" placeholder="username"><br>
+                <label for="username" class="required">username</label>
+                <input required type="text" id="username" name="username"><br>
                 
-                <label for="password">*</label>
-                <input required type="text" id="first_name" name="first_name" placeholder="first name"><br>
+                <label class="required" for="first_name">first_name</label>
+                <input required type="text" id="first_name" name="first_name"><br>
 
-                <input type="text" id="last_name" name="last_name" placeholder="last name"><br>
+                <label for="last_name">last name</label>
+                <input type="text" id="last_name" name="last_name"><br>
                 
-                <label for="password">*</label>
-                <input required pattern="[a-zA-z0-9._+-]+@[a-zA-z0-9-]+\.+[a-z]{2,}" title="must be a valid email address" type="email" id="email" name="email" placeholder="email" ><br>
+                <label class="required" for="email">email</label>
+                <input required type="text" required pattern="[a-zA-z0-9._+-]+@[a-zA-z0-9-]+\.+[a-z]{2,}" title="must be a valid email address" type="email" id="email" name="email"><br>
                 
-                <label for="password">*</label>
-                <input required pattern="[a-zA-Z0-9@#$%^&+=]{8,}" title="must be at least 8 characters" type="password" id="password" name="password" placeholder="password" ><br>
-            
-                <!-- <input type="text" id="gender" name="gender" placeholder="gender (M or F)" ><br> -->
-            
-
+                <label class="required" for="password">password</label>
+                <input required pattern="[a-zA-Z0-9@#$%^&+=]{8,}" title="must be at least 8 characters" type="password" id="password" name="password"><br>            
+                
+                <label for="gender">gender</label>
                 <select id="gender" name="gender">
                     <option value="M">Male</option>
                     <option value="F">Female</option>
-                </select>
+                </select><br>
 
-                <input type="date" id="birth_date" name="birth_date" ><br>
+                <label for="birth_date">birth date</label>
+                <input type="date" id="birth_date" name="birth_date"><br>
                 
-                <input type="tel" id="phone" name="phone" placeholder="phone number" ><br>
+                <label for="phone">phone</label>
+                <input type="tel" id="phone" name="phone"><br>
 
                 <input type="submit" value="Sign up">
         </form>

@@ -135,6 +135,23 @@
               background-color: #04aa20;
               color: white;
             }
+            /* field error style */
+            .error {
+              color: rgb(255, 255, 255);
+              background: #f78383 !important;
+              padding: 10px !important;
+              border-radius: 0 !important;
+              position: relative; 
+              display: inline-block !important;
+              box-shadow: 2px 2px 2px #919191;
+              margin-top: 10px;
+              font-size: medium;
+            }
+            .required:after {
+                content:" *";
+                color: red;
+            }
+
         </style>
             <!-- For icon -->
         <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
