@@ -1,8 +1,7 @@
 {% extends 'base.html' %}
+{% block header %} <h1>register page</h1> <h3>Please fill out this form</h3>{% endblock %}
 {% block content %} 
-<header>
-    <h3>Please fill out this form</h3>
-</header> 
+    
     <div>
         {% if errors %}
             {% for error in errors %}

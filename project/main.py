@@ -1,12 +1,9 @@
 from flask import Flask, request, render_template, session, redirect, url_for, jsonify, flash
 from flask_session import Session
 
-import mysql.connector
-from mysql.connector import errorcode
-
-
 from blueprints.user.user import user_blueprint
 from blueprints.file.upload import upload_blueprint
+from blueprints.post.posts import posts_blueprint
 
 from flask_wtf import FlaskForm
 from wtforms import FileField
@@ -28,6 +25,7 @@ app = Flask(__name__)
 the_bcrypt = Bcrypt(app)
 app.register_blueprint(user_blueprint)
 app.register_blueprint(upload_blueprint)
+app.register_blueprint(posts_blueprint)
 
 from flask_mail import Mail, Message
 

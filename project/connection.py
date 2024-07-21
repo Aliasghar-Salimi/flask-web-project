@@ -41,6 +41,22 @@ def connect():
                         code INT NOT NULL,
                         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
                         ) ENGINE=InnoDB""")
+    tables['posts'] = (
+                        """CREATE TABLE IF NOT EXISTS posts (
+                        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        description VARCHAR(250) NOT NULL
+                        ) ENGINE=InnoDB""")
+    # tables['tags'] = (
+    #                 """CREATE TABLE IF NOT EXISTS tags (
+    #                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    #                 tag_name VARCHAR(50) NOT NULL UNIQUE,
+    #                 ) ENGINE=InnoDB""")
+    # tables['post_tag'] = (
+    #                """CREATE TABLE IF NOT EXISTS post_tag (
+    #                post_id INT,
+    #                tag_id INT,
+    #                ) ENGINE=InnoDB""")
+
 
     for table_name in tables:
         cursor.execute(tables[table_name])

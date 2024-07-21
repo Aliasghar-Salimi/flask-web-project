@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %} 
+<header>
+    <h3>Please fill out this form</h3>
+</header> 
+    <div>
+        {% if errors %}
+            {% for error in errors %}
+                <h3 class="error">{{ error }}</h3>
+            {% endfor %}
+        {% endif %}
+        <form method="post" action="/create-post/">
+                <label for="desc" class="required">desctiption</label>
+                <input required type="text" id="desc" name="desc"><br>
+                
+
+                <!-- <label for="last_name">last name</label>
+                <input type="text" id="last_name" name="last_name"><br> -->
+                                
+                <!-- <label for="gender">gender</label>
+                <select id="gender" name="gender">
+                    <option value="M">Male</option>
+                    <option value="F">Female</option>
+                </select><br> -->
+
+                <!-- <label for="birth_date">birth date</label>
+                <input type="date" id="birth_date" name="birth_date"><br> -->
+                
+                <input type="submit" value="post">
+        </form>
+    </div>    
+{% endblock %}
