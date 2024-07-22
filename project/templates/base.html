@@ -151,7 +151,12 @@
                 content:" *";
                 color: red;
             }
-
+            .fontsize {
+                font-size: medium;
+            }
+            .form{
+                box-sizing: border-box;
+            }
         </style>
             <!-- For icon -->
         <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
@@ -189,7 +194,7 @@
             {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         <div style="margin-left: 200px;
-                        margin-right: 200px;" class="alert alert-info" role="alert">
+                        margin-right: 200px;" class="alert alert-info fontsize" role="alert">
                             {% for message in messages %}
                                 {{ message }}
                             {% endfor %}

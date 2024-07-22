@@ -46,16 +46,18 @@ def connect():
                         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                         description VARCHAR(250) NOT NULL
                         ) ENGINE=InnoDB""")
-    # tables['tags'] = (
-    #                 """CREATE TABLE IF NOT EXISTS tags (
-    #                 id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    #                 tag_name VARCHAR(50) NOT NULL UNIQUE,
-    #                 ) ENGINE=InnoDB""")
-    # tables['post_tag'] = (
-    #                """CREATE TABLE IF NOT EXISTS post_tag (
-    #                post_id INT,
-    #                tag_id INT,
-    #                ) ENGINE=InnoDB""")
+    tables['categories'] = (
+                        """CREATE TABLE IF NOT EXISTS categories (
+                        id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                        name VARCHAR(50) NOT NULL UNIQUE
+                        ) ENGINE=InnoDB""")
+    tables['post_tag'] = (
+                        """CREATE TABLE IF NOT EXISTS post_tag (
+                        post_id INT, 
+                        cat_id INT, 
+                        FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE, 
+                        FOREIGN KEY (cat_id) REFERENCES categories(id) ON DELETE CASCADE
+                        ) ENGINE=InnoDB""")
 
 
     for table_name in tables:

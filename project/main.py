@@ -47,7 +47,7 @@ Session(app)
 # Secret key configuration
 app.secret_key = "~\x7fS~\xa1\x08\xcd79Jgj"
 app.config["SECRET_KEY"] = "~\x7fS~\xa1\x08\xcd79Jgj"
-app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=5)
+app.config['PERMANENT_SESSION_LIFETIME'] =  timedelta(minutes=25)
 
 # Media configuration
 UPLOAD_FOLDER = ('media/images')

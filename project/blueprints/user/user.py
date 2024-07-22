@@ -271,10 +271,10 @@ def check_password():
                     return redirect("/send-email/")
                 else:
                     flash("Password does not match")
-                    return redirect("/check_password/")
+                    return redirect("/check-password/")
             else:
                 flash("enter the right password")
-                return redirect("/check_password/")
+                return redirect("/check-password/")
     else:
         return render_template("reset_password.html")
 

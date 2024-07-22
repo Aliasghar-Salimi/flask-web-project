@@ -2,8 +2,7 @@
 {% block header %} <h1>posts</h1> {% endblock %}
 {% block content %}  
         {% if session.username %}
-        
-            <body>
+            <body class="fontsize">
                 <div id="posts">
                   {% for post in posts %}
                   <div class="card border-dark">
@@ -23,10 +22,16 @@
                       </div>
                     </div>
                     <div class="card-body">
-                      <div class="card-text">{{ post[0] }}</div>
+                      <div class="card-text">{{ post[1] }}</div>
                     </div>
-                    <div class="card-footer text-muted">tags: <br>
-                    
+                    <div class="card-footer text-muted">
+                        {% for category in categories %}
+                          {% for tags in post_tags[post[0]] %}
+                            {% if category == tags[0] %}
+                              #{{ categories[tags[0]] }}<br>
+                            {% endif %}
+                          {% endfor %}
+                        {% endfor %}
                     </div>
                   </div>
                   <br/> {% endfor %}

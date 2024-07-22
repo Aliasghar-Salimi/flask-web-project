@@ -2,41 +2,53 @@
 {% block header %} <h1>register page</h1> <h3>Please fill out this form</h3>{% endblock %}
 {% block content %} 
     
-    <div>
+    <div class="fontsize">
         {% if errors %}
             {% for error in errors %}
                 <h3 class="error">{{ error }}</h3>
             {% endfor %}
         {% endif %}
-        <form method="post" action="/register/">
-                <label for="username" class="required">username</label>
-                <input required type="text" id="username" name="username"><br>
-                
-                <label class="required" for="first_name">first_name</label>
-                <input required type="text" id="first_name" name="first_name"><br>
-
-                <label for="last_name">last name</label>
-                <input type="text" id="last_name" name="last_name"><br>
-                
-                <label class="required" for="email">email</label>
-                <input required type="text" required pattern="[a-zA-z0-9._+-]+@[a-zA-z0-9-]+\.+[a-z]{2,}" title="must be a valid email address" type="email" id="email" name="email"><br>
-                
-                <label class="required" for="password">password</label>
-                <input required pattern="[a-zA-Z0-9@#$%^&+=]{8,}" title="must be at least 8 characters" type="password" id="password" name="password"><br>            
-                
-                <label for="gender">gender</label>
-                <select id="gender" name="gender">
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                </select><br>
-
-                <label for="birth_date">birth date</label>
-                <input type="date" id="birth_date" name="birth_date"><br>
-                
-                <label for="phone">phone</label>
-                <input type="tel" id="phone" name="phone"><br>
-
-                <input type="submit" value="Sign up">
+        <form method="post" class="form" action="/register/">
+            <ul style="list-style-type:none">
+                <li >
+                    <label for="username" class="required">username</label>
+                    <input required type="text" id="username" name="username"><br>
+                </li>
+                <li>
+                    <label class="required" for="first_name">first_name</label>
+                    <input required type="text" id="first_name" name="first_name"><br>
+                </li>
+                <li>
+                    <label for="last_name">last name</label>
+                    <input type="text" id="last_name" name="last_name"><br>
+                </li>
+                <li>
+                    <label class="required" for="email">email</label>
+                    <input required type="text" required pattern="[a-zA-z0-9._+-]+@[a-zA-z0-9-]+\.+[a-z]{2,}" title="must be a valid email address" type="email" id="email" name="email"><br>
+                </li>
+                <li>
+                    <label class="required" for="password">password</label>
+                    <input required pattern="[a-zA-Z0-9@#$%^&+=]{8,}" title="must be at least 8 characters" type="password" id="password" name="password"><br>
+                </li>
+                <li>
+                    <label for="gender">gender</label>
+                    <select id="gender" name="gender">
+                        <option value="M">Male</option>
+                        <option value="F">Female</option>
+                    </select><br>
+                </li>
+                <li>
+                    <label for="birth_date">birth date</label>
+                    <input type="date" id="birth_date" name="birth_date"><br>
+                </li>
+                <li>
+                    <label for="phone">phone</label>
+                    <input type="tel" id="phone" name="phone"><br>
+                </li>
+                <li>
+                    <input type="submit" value="Sign up">
+                </li>
+            </ul>
         </form>
     </div>    
 {% endblock %}
