@@ -44,19 +44,20 @@ def connect():
     tables['posts'] = (
                         """CREATE TABLE IF NOT EXISTS posts (
                         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                        description VARCHAR(250) NOT NULL
+                        description VARCHAR(250) NOT NULL,
+                        delete_date DATE DEFAULT NULL
                         ) ENGINE=InnoDB""")
-    tables['categories'] = (
-                        """CREATE TABLE IF NOT EXISTS categories (
+    tables['the_tags'] = (
+                        """CREATE TABLE IF NOT EXISTS the_tags (
                         id INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                         name VARCHAR(50) NOT NULL UNIQUE
                         ) ENGINE=InnoDB""")
     tables['post_tag'] = (
                         """CREATE TABLE IF NOT EXISTS post_tag (
                         post_id INT, 
-                        cat_id INT, 
+                        tag_id INT, 
                         FOREIGN KEY (post_id) REFERENCES posts(id) ON DELETE CASCADE, 
-                        FOREIGN KEY (cat_id) REFERENCES categories(id) ON DELETE CASCADE
+                        FOREIGN KEY (tag_id) REFERENCES the_tags(id) ON DELETE CASCADE
                         ) ENGINE=InnoDB""")
 
 
