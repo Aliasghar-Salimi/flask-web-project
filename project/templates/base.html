@@ -181,6 +181,9 @@
         <header>
             <div class="topnav">
                 <a class="active" href="/">Home</a>
+                {% if session.username %}
+                    <a href="/posts/">posts</a>
+                {% endif %}
                 {% if not session.username %}
                     <a href="/register/">sign in</a>
                     <a href="/login/">login</a>
