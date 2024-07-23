@@ -3,29 +3,24 @@
 <header>
     <h3>Please fill out this form</h3>
 </header> 
-    <div>
-        {% if errors %}
-            {% for error in errors %}
-                <h3 class="error">{{ error }}</h3>
-            {% endfor %}
-        {% endif %}
+    <div class="fontsize">
         <form method="post" action="/create-post/">
+                <input type="hidden" id="post_id" name="post_id" value="">
                 <label for="desc" class="required">desctiption</label>
                 <input required type="text" id="desc" name="desc"><br>
-                
 
-                <!-- <label for="last_name">last name</label>
-                <input type="text" id="last_name" name="last_name"><br> -->
-                                
-                <!-- <label for="gender">gender</label>
-                <select id="gender" name="gender">
-                    <option value="M">Male</option>
-                    <option value="F">Female</option>
-                </select><br> -->
-
-                <!-- <label for="birth_date">birth date</label>
-                <input type="date" id="birth_date" name="birth_date"><br> -->
-                
+                <label for="tags">tags</label>
+                <select id="tags" name="tags" multiple>
+                    {% for tag in tags %}
+                        <option value="{{tag[1]}}">{{tag[1]}}</option>
+                    {% endfor %}
+                </select><br>
+                <div style="text-align: center;">
+                    <a href="/add-tag/"
+                      ><button type="button" class="btn btn-primary btn-lg">
+                        Add some tags
+                      </button></a>
+                  </div>
                 <input type="submit" value="post">
         </form>
     </div>    
