@@ -25,10 +25,10 @@
                       <div class="card-text">{{ post[1] }}</div>
                     </div>
                     <div class="card-footer text-muted">
-                        {% for category in categories %}
+                        {% for tag in tag_dict %}
                           {% for tags in post_tags[post[0]] %}
-                            {% if category == tags[0] %}
-                              #{{ categories[tags[0]] }}<br>
+                            {% if tag == tags[0] %}
+                              #{{ tag_dict[tags[0]] }}<br>
                             {% endif %}
                           {% endfor %}
                         {% endfor %}
