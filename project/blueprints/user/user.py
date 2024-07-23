@@ -4,7 +4,7 @@ import connection
 
 import hashlib
 
-from validatoins import *
+from validations import *
 
 import json
 
