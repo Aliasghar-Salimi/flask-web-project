@@ -59,7 +59,7 @@ def fetch_posts():
     cursor = cnx.cursor(buffered=True)
 
     # Fetching the post id's and descriptions to display in the page
-    fetch_post_query = "SELECT id, description FROM posts"
+    fetch_post_query = "SELECT id, description FROM posts WHERE delete_date is NULL"
     cursor.execute(fetch_post_query)
     posts = cursor.fetchall()
 
@@ -91,11 +91,23 @@ def fetch_posts():
     cnx.close()
     return render_template('posts.html', posts=posts, post_tags=post_tags, tag_dict=tag_dict)
 
-@posts_blueprint.route('/delete-post/', methods=["POST"])
-def delete_post():
+@posts_blueprint.route('/delete-post/<id>/', methods=["POST","GET"])
+def delete_post(id):
     cnx = connection.connect()
     cursor = cnx.cursor(buffered=True)
+    
+    from datetime import datetime
+    now = datetime.today().strftime('%Y-%m-%d %H:%M:%S')
+    delete_post_query = f"""UPDATE posts SET delete_date=\"{now}\" WHERE id=\"{id}\""""
+    cursor.execute(delete_post_query)
+    cnx.commit()
 
+    if cursor.rowcount > 0:
+        flash("post successfully deleted")
+        return redirect('/posts/')
+    else:
+        flash("there is no such post")
+        return redirect('/posts/')  
 
 @posts_blueprint.route('/add-tag/', methods=['POST', 'GET'])
 def add_tag():
