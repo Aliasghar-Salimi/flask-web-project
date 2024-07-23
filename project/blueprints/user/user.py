@@ -96,7 +96,7 @@ def user_login():
                 if check_password_hash(current_password[0], password):
                     session.permanent = True
                     session['username'] = request.form.get('username')
-                    return redirect('/')
+                    return redirect('/posts/')
                 else:
                     flash('wrong username or password')
                     return redirect('/login/')
