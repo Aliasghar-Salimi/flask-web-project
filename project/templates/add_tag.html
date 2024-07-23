@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %} 
+<header>
+    <h3>you can add any tag here</h3>
+</header> 
+    <div class="fontsize">
+        <form method="post" action="/add-tag/">
+                <input type="hidden" id="post_id" name="post_id" value="">
+                <label for="tags" class="required">tags</label>
+                <input required type="text" id="tags" name="tags" placeholder="add tags with a space between them"><br>
+                
+                <input type="submit" value="add">
+        </form>
+    </div>    
+{% endblock %}
